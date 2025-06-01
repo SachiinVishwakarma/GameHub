@@ -2,66 +2,139 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Dot Box Game</title>
   <style>
+    /* Reset and base */
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f4f4f9;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(135deg, #dceff9, #fef6e4);
       text-align: center;
       margin: 0;
-      padding: 0;
+      padding: 20px 10px;
+      user-select: none;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     h2 {
-      margin-top: 20px;
-      color: #333;
+      margin-bottom: 8px;
+      font-weight: 700;
+      font-size: 2.8rem;
+      color: #ff6f61;
+      text-shadow: 1px 1px 2px #ffa894;
+      letter-spacing: 2px;
     }
 
+    .info {
+      font-size: 1.2rem;
+      margin: 6px 0;
+      font-weight: 600;
+      color: #555;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    #turn {
+      font-weight: 900;
+      font-size: 1.4rem;
+      color: #ff6f61;
+      transition: color 0.3s ease;
+    }
+
+    #turn.B {
+      color: #3a86ff;
+    }
+
+    #scoreboard {
+      margin-top: 4px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #444;
+    }
+
+    /* Grid container */
     #game {
       display: grid;
       grid-template-columns: repeat(19, 30px);
       justify-content: center;
       margin: 30px auto;
+      user-select: none;
     }
 
+    /* Dot style */
     .dot {
-      width: 10px;
-      height: 10px;
-      background: #222;
+      width: 14px;
+      height: 14px;
+      background: #ff6f61;
       border-radius: 50%;
+      box-shadow:
+        0 0 8px 1px #ff6f61aa,
+        inset 0 0 5px #ff6f61ff;
       margin: auto;
+      transition: background 0.3s ease;
     }
 
+    /* Lines base */
     .h-line,
     .v-line {
       background: transparent;
       cursor: pointer;
-      transition: background 0.2s ease;
+      border-radius: 6px;
+      box-shadow: inset 0 0 4px #bbb;
+      transition:
+        background-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.1s ease;
     }
 
+    /* Hover effect on lines */
+    .h-line:hover:not(.line-A):not(.line-B),
+    .v-line:hover:not(.line-A):not(.line-B) {
+      background: #ffc3b2;
+      box-shadow: 0 0 6px #ffa07a;
+      transform: scale(1.1);
+      z-index: 5;
+    }
+
+    /* Horizontal line */
     .h-line {
       margin-left: -10px;
-      width: 50px;
-      height: 8px;
+      width: 52px;
+      height: 10px;
     }
 
+    /* Vertical line */
     .v-line {
       margin-left: 10px;
-      width: 8px;
-      height: 35px;
+      width: 10px;
+      height: 38px;
     }
 
+    /* Player A lines */
     .line-A {
-      background-color: red;
-      border-radius: 4px;
+      background-color: #ff6f61;
+      box-shadow:
+        0 0 8px 2px #ff6f61cc,
+        inset 0 0 6px #ff3b2f;
+      border-radius: 6px;
       animation: drawLine 0.3s ease-in-out;
+      cursor: default;
     }
 
+    /* Player B lines */
     .line-B {
-      background-color: blue;
-      border-radius: 4px;
+      background-color: #3a86ff;
+      box-shadow:
+        0 0 8px 2px #3a86ffcc,
+        inset 0 0 6px #2057e1;
+      border-radius: 6px;
       animation: drawLine 0.3s ease-in-out;
+      cursor: default;
     }
 
     @keyframes drawLine {
@@ -74,44 +147,69 @@
       }
     }
 
+    /* Squares */
     .square {
       margin-left: -10px;
-      width: 49px;
-      height: 35px;
+      width: 50px;
+      height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: bold;
-      font-size: 16px;
-      background: #fff;
-      transition: background 0.3s;
+      font-weight: 900;
+      font-size: 20px;
+      background: #fff7e6;
+      box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.1),
+        inset 0 0 8px #fff9f2;
+      border-radius: 6px;
+      user-select: none;
+      transition: background 0.4s ease, box-shadow 0.4s ease;
     }
 
+    /* Square filled styles */
     .filled-A {
-      background-color: rgba(255, 0, 0, 0.2);
-      color: red;
+      background-color: #ff6f61aa;
+      color: #b93b2a;
+      box-shadow:
+        0 0 12px #ff6f61bb,
+        inset 0 0 14px #ff3b2fcc;
+      animation: popIn 0.4s ease forwards;
     }
 
     .filled-B {
-      background-color: rgba(0, 0, 255, 0.2);
-      color: blue;
+      background-color: #3a86ffaa;
+      color: #153d8b;
+      box-shadow:
+        0 0 12px #3a86ffbb,
+        inset 0 0 14px #2057e1cc;
+      animation: popIn 0.4s ease forwards;
     }
 
-    .info {
-      font-size: 18px;
-      color: #444;
-    }
-
-    #scoreboard {
-      margin-top: 10px;
+    @keyframes popIn {
+      0% {
+        transform: scale(0.3);
+        opacity: 0;
+      }
+      80% {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+      }
     }
   </style>
 </head>
 
 <body>
   <h2>Dot Box Game</h2>
-  <div class="info">Current Turn: <span id="turn">A</span></div>
-  <div class="info" id="scoreboard">Score A: <span id="scoreA">0</span> | Score B: <span id="scoreB">0</span></div>
+  <div class="info">
+    Current Turn:
+    <span id="turn" class="A">A</span>
+  </div>
+  <div class="info" id="scoreboard">
+    Score A: <span id="scoreA">0</span> | Score B: <span id="scoreB">0</span>
+  </div>
   <div id="game"></div>
 
   <script>
@@ -127,11 +225,15 @@
     function updateScore() {
       document.getElementById('scoreA').textContent = score.A;
       document.getElementById('scoreB').textContent = score.B;
+
+      const turnSpan = document.getElementById('turn');
+      turnSpan.textContent = turn;
+      turnSpan.className = turn;
     }
 
     function switchTurn() {
       turn = turn === 'A' ? 'B' : 'A';
-      document.getElementById('turn').textContent = turn;
+      updateScore();
     }
 
     function renderGrid() {
@@ -170,7 +272,6 @@
           const gained = checkBox(i, j, 'h');
           renderGrid();
           if (!gained) switchTurn();
-          updateScore();
         }
       };
       return line;
@@ -186,52 +287,68 @@
           const gained = checkBox(i, j, 'v');
           renderGrid();
           if (!gained) switchTurn();
-          updateScore();
         }
       };
       return line;
     }
 
     function createSquare(i, j) {
-      const square = document.createElement('div');
-      square.className = 'square';
+      const sq = document.createElement('div');
+      sq.className = 'square';
       if (boxes[i][j]) {
-        square.textContent = boxes[i][j];
-        square.classList.add(`filled-${boxes[i][j]}`);
+        sq.classList.add(`filled-${boxes[i][j]}`);
+        sq.textContent = boxes[i][j];
+      } else {
+        sq.textContent = '';
       }
-      return square;
+      return sq;
     }
 
     function checkBox(i, j, type) {
-      let filled = false;
-
-      const markBox = (r, c) => {
-        if (
-          hLines[r][c] &&
-          hLines[r + 1][c] &&
-          vLines[r][c] &&
-          vLines[r][c + 1] &&
-          !boxes[r][c]
-        ) {
-          boxes[r][c] = turn;
-          score[turn]++;
-          filled = true;
-        }
-      };
+      // Returns true if at least one box completed, else false
+      let gainedPoint = false;
 
       if (type === 'h') {
-        if (i > 0) markBox(i - 1, j);
-        if (i < size - 1) markBox(i, j);
+        // Top box
+        if (i > 0 && checkBoxCompleted(i - 1, j)) {
+          boxes[i - 1][j] = turn;
+          score[turn]++;
+          gainedPoint = true;
+        }
+        // Bottom box
+        if (i < size - 1 && checkBoxCompleted(i, j)) {
+          boxes[i][j] = turn;
+          score[turn]++;
+          gainedPoint = true;
+        }
       } else if (type === 'v') {
-        if (j > 0) markBox(i, j - 1);
-        if (j < size - 1) markBox(i, j);
+        // Left box
+        if (j > 0 && checkBoxCompleted(i, j - 1)) {
+          boxes[i][j - 1] = turn;
+          score[turn]++;
+          gainedPoint = true;
+        }
+        // Right box
+        if (j < size - 1 && checkBoxCompleted(i, j)) {
+          boxes[i][j] = turn;
+          score[turn]++;
+          gainedPoint = true;
+        }
       }
-
-      return filled;
+      return gainedPoint;
     }
 
+    function checkBoxCompleted(i, j) {
+      return (
+        hLines[i][j] &&
+        hLines[i + 1][j] &&
+        vLines[i][j] &&
+        vLines[i][j + 1]
+      );
+    }
+
+    updateScore();  
     renderGrid();
-    updateScore();
   </script>
 </body>
 
