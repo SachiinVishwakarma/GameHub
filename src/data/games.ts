@@ -35,7 +35,7 @@ export const games: Game[] = [
     imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbBLdXrR5d8fYY96HgIOlQzKddJrMp08IQSg&s',
     category: 'Masti',
     tags: ['Strategy', 'Multiplayer', 'Grid'],
-    url: '/DotBoxGame/index.html' 
+    url: '/Dot-Box/index.html' 
   }
 
 
