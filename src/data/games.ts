@@ -8,7 +8,7 @@ export const games: Game[] = [
     imageUrl: 'https://t3.ftcdn.net/jpg/00/73/53/78/360_F_73537839_a7DojP10378CoxJuw9uQUHObg5guSkJt.jpg',
     category: 'Adventure',
     tags: ['Space', 'Exploration', 'Sci-Fi'],
-    url: '/src/Games/Archery/index.html'
+    url: '/Archery/index.html'
   },
   {
     id: '2',
@@ -17,7 +17,7 @@ export const games: Game[] = [
     imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTphYlKWQX-_Rzfr-WLEXyULGLGRU5qbOQUYQ&s',
     category: 'Masti',
     tags: ['Chill', 'Relief Stress'],
-    url: '/src/Games/Tic-Tac-Toe/index.html'
+    url: '/Tic-Tac-Toe/index.html'
   },
   {
     id: '3',
@@ -26,7 +26,7 @@ export const games: Game[] = [
     imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUGJvepxhKyfZhQH66LUKAVlQVnY-bEgYHyQ&s',
     category: 'Masti',
     tags: ['Arcade', 'Classic', 'Addictive'],
-    url: '/src/Games/Pac-Man/index.html' // Update path if needed
+    url: '/Pac-Man/index.html' // Update path if needed
   },
   {
     id: '4',
@@ -35,7 +35,7 @@ export const games: Game[] = [
     imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbBLdXrR5d8fYY96HgIOlQzKddJrMp08IQSg&s',
     category: 'Masti',
     tags: ['Strategy', 'Multiplayer', 'Grid'],
-    url: '/src/Games/DotBoxGame/index.html' 
+    url: '/DotBoxGame/index.html' 
   }
 
 
