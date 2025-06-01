@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tic Tac Toe - Animated & Score</title>
+  <!-- Google Fonts CDN -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      user-select: none;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+    }
+
+    .scoreboard {
+      display: flex;
+      gap: 40px;
+      margin-bottom: 20px;
+      font-weight: 600;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    .score {
+      background: rgba(255,255,255,0.15);
+      padding: 15px 25px;
+      border-radius: 10px;
+      min-width: 100px;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+      transition: background 0.3s ease;
+    }
+
+    .score span {
+      display: block;
+      font-size: 2.4rem;
+      margin-top: 5px;
+      color: #ffd700;
+      font-weight: 700;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 15px;
+      background: rgba(255,255,255,0.1);
+      padding: 15px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+
+    .cell {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 3.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 900;
+      color: #fff;
+      transition: background-color 0.3s ease;
+      position: relative;
+      user-select: none;
+    }
+
+    .cell:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: scale(1.1);
+      box-shadow: 0 0 12px #ffd700;
+    }
+
+    .cell.x {
+      color: #4caf50;
+      animation: popIn 0.3s ease forwards;
+    }
+
+    .cell.o {
+      color: #ff4081;
+      animation: popIn 0.3s ease forwards;
+    }
+
+    @keyframes popIn {
+      0% {
+        transform: scale(0.3);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .reset-btn {
+      margin-top: 30px;
+      background: #ffd700;
+      border: none;
+      padding: 12px 30px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 25px;
+      color: #333;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.5);
+      transition: background 0.3s ease;
+    }
+
+    .reset-btn:hover {
+      background: #e6c200;
+    }
+
+    .status {
+      margin-top: 15px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      height: 25px;
+      letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 380px) {
+      .board {
+        grid-template-columns: repeat(3, 80px);
+        grid-template-rows: repeat(3, 80px);
+        gap: 12px;
+      }
+      .cell {
+        font-size: 3rem;
+      }
+      .score {
+        min-width: 80px;
+        padding: 12px 20px;
+        font-size: 1rem;
+      }
+      .score span {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tic Tac Toe</h1>
+
+  <div class="scoreboard">
+    <div class="score" id="scoreX">X<br /><span>0</span></div>
+    <div class="score" id="scoreO">O<br /><span>0</span></div>
+  </div>
+
+  <div class="board" id="board">
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+  </div>
+
+  <div class="status" id="status"></div>
+
+  <button class="reset-btn" id="resetBtn">Restart Game</button>
+
+  <script>
+    const X_CLASS = 'x';
+    const O_CLASS = 'o';
+    const WINNING_COMBINATIONS = [
+      [0,1,2],
+      [3,4,5],
+      [6,7,8],
+      [0,3,6],
+      [1,4,7],
+      [2,5,8],
+      [0,4,8],
+      [2,4,6]
+    ];
+
+    const board = document.getElementById('board');
+    const cells = document.querySelectorAll('[data-cell]');
+    const status = document.getElementById('status');
+    const resetBtn = document.getElementById('resetBtn');
+    const scoreXDisplay = document.querySelector('#scoreX span');
+    const scoreODisplay = document.querySelector('#scoreO span');
+
+    let xTurn = true;
+    let scores = { X: 0, O: 0 };
+
+    function startGame() {
+      cells.forEach(cell => {
+        cell.classList.remove(X_CLASS);
+        cell.classList.remove(O_CLASS);
+        cell.textContent = '';
+        cell.addEventListener('click', handleClick, { once: true });
+      });
+      xTurn = true;
+      status.textContent = `Player X's Turn`;
+    }
+
+    function handleClick(e) {
+      const cell = e.target;
+      const currentClass = xTurn ? X_CLASS : O_CLASS;
+      placeMark(cell, currentClass);
+      if (checkWin(currentClass)) {
+        endGame(false);
+        updateScore(xTurn ? 'X' : 'O');
+      } else if (isDraw()) {
+        endGame(true);
+      } else {
+        swapTurns();
+        updateStatus();
+      }
+    }
+
+    function placeMark(cell, currentClass) {
+      cell.classList.add(currentClass);
+      cell.textContent = currentClass.toUpperCase();
+    }
+
+    function swapTurns() {
+      xTurn = !xTurn;
+    }
+
+    function checkWin(currentClass) {
+      return WINNING_COMBINATIONS.some(combination => {
+        return combination.every(index => {
+          return cells[index].classList.contains(currentClass);
+        });
+      });
+    }
+
+    function isDraw() {
+      return [...cells].every(cell => {
+        return cell.classList.contains(X_CLASS) || cell.classList.contains(O_CLASS);
+      });
+    }
+
+    function endGame(draw) {
+      if (draw) {
+        status.textContent = "It's a Draw!";
+      } else {
+        status.textContent = `Player ${xTurn ? "X" : "O"} Wins! 🎉`;
+      }
+      cells.forEach(cell => cell.removeEventListener('click', handleClick));
+    }
+
+    function updateScore(winner) {
+      scores[winner]++;
+      if (winner === 'X') {
+        scoreXDisplay.textContent = scores.X;
+      } else {
+        scoreODisplay.textContent = scores.O;
+      }
+    }
+
+    function updateStatus() {
+      status.textContent = `Player ${xTurn ? "X" : "O"}'s Turn`;
+    }
+
+    resetBtn.addEventListener('click', () => {
+      startGame();
+    });
+
+    startGame();
+  </script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Arial', sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+  animation: backgroundShift 8s ease-in-out infinite alternate;
+  z-index: 0;
+}
+
+@keyframes backgroundShift {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.7; }
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.ui-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.score-panel {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 20px;
+  color: white;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  z-index: 15;
+}
+
+.score {
+  font-size: 2.5em;
+  font-weight: bold;
+  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.difficulty-panel {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 15px;
+  z-index: 15;
+  pointer-events: all;
+}
+
+.difficulty-btn {
+  background: linear-gradient(45deg, #4CAF50, #45a049);
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.difficulty-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.difficulty-btn.active {
+  background: linear-gradient(45deg, #FF6B6B, #FF5252);
+  box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+}
+
+.difficulty-btn.medium {
+  background: linear-gradient(45deg, #FFC107, #FF9800);
+}
+
+.difficulty-btn.hard {
+  background: linear-gradient(45deg, #FF5722, #E91E63);
+}
+
+.power-meter {
+  position: absolute;
+  left: 50px;
+  bottom: 100px;
+  width: 20px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 15;
+}
+
+.power-fill {
+  width: 100%;
+  background: linear-gradient(to top, #ff4444, #ffff44, #44ff44);
+  border-radius: 10px;
+  transition: height 0.1s ease;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.instructions {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  text-align: center;
+  font-size: 1.2em;
+  opacity: 0.8;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  z-index: 15;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #ffd700;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: sparkle 2s ease-out forwards;
+}
+
+@keyframes sparkle {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) translateY(-50px);
+  }
+}
+
+.floating-score {
+  position: absolute;
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 2em;
+  pointer-events: none;
+  animation: floatScore 2s ease-out forwards;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+
+@keyframes floatScore {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100px) scale(1.5);
+  }
+}
+
+#arc {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawArc 3s ease-in-out infinite;
+}
+
+@keyframes drawArc {
+  0%, 90% {
+    stroke-dashoffset: 1000;
+    opacity: 0;
+  }
+  10%, 80% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.falling-object {
+  animation: fall 4s linear infinite;
+}
+
+@keyframes fall {
+  from {
+    transform: translateY(-50px);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(450px);
+    opacity: 0.5;
+  }
+}
+
+.explosion {
+  animation: explode 0.6s ease-out forwards;
+}
+
+@keyframes explode {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}

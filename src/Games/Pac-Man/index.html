@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Neo Pac-Man</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      background: #0a0a0a;
+      font-family: 'Courier New', monospace;
+    }
+
+    .pacman {
+      width: 30px;
+      height: 30px;
+      background: radial-gradient(circle, yellow 60%, gold 100%);
+      border-radius: 50%;
+      position: absolute;
+      animation: chomp 0.3s infinite alternate;
+    }
+
+    @keyframes chomp {
+      0% {
+        clip-path: polygon(100% 50%, 0% 0%, 0% 100%);
+      }
+      100% {
+        clip-path: polygon(100% 50%, 0% 30%, 0% 70%);
+      }
+    }
+
+    .ghost {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(to top, #f87171, #ef4444);
+      border-radius: 50% 50% 0 0;
+      position: absolute;
+      box-shadow: 0 0 10px #ef4444;
+      animation: float 0.8s infinite ease-in-out alternate;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-5px); }
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+    }
+
+    .sidebar {
+      background: #1f2937;
+    }
+  </style>
+</head>
+<body class="flex text-white">
+
+  <!-- Sidebar -->
+  <div class="sidebar w-64 h-screen p-6 flex flex-col justify-between">
+    <div>
+      <h2 class="text-3xl font-bold text-yellow-400 mb-8">Neo Pac-Man</h2>
+      <ul>
+        <li class="mb-4 text-lg">🎮 New Game</li>
+        <li class="mb-4 text-lg">🏆 High Scores</li>
+        <li class="mb-4 text-lg">⚙️ Settings</li>
+      </ul>
+    </div>
+    <p class="text-sm text-gray-400">Designed by Sachin ⚡</p>
+  </div>
+
+  <!-- Game Area -->
+  <div class="flex-1 flex flex-col items-center justify-start p-4">
+    <div class="w-full max-w-[700px] flex justify-between mb-4">
+      <div class="text-xl">Score: <span id="score">0</span></div>
+      <button onclick="location.reload()" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-1 px-4 rounded">
+        🔁 Restart
+      </button>
+    </div>
+
+    <div id="game" class="relative w-[700px] h-[400px] bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+      <div id="pacman" class="pacman"></div>
+      <div id="ghost" class="ghost"></div>
+      <div id="dots"></div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden">
+    <div class="bg-white text-black p-8 rounded-xl shadow-xl text-center max-w-sm w-full">
+      <h2 id="modal-title" class="text-2xl font-bold mb-4">Game Over!</h2>
+      <p id="modal-message" class="mb-6">Your final score: <span id="final-score"></span></p>
+      <button onclick="location.reload()" class="bg-yellow-400 hover:bg-yellow-500 px-4 py-2 rounded font-bold">
+        🔁 Play Again
+      </button>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script>
+    const pacman = document.getElementById("pacman");
+    const ghost = document.getElementById("ghost");
+    const dotsContainer = document.getElementById("dots");
+    const scoreDisplay = document.getElementById("score");
+    const modal = document.getElementById("modal");
+    const finalScore = document.getElementById("final-score");
+    const modalTitle = document.getElementById("modal-title");
+
+    let posX = 10, posY = 10, score = 0;
+    const step = 20;
+
+    function movePacman(e) {
+      switch (e.key) {
+        case "ArrowUp": posY = Math.max(0, posY - step); break;
+        case "ArrowDown": posY = Math.min(370, posY + step); break;
+        case "ArrowLeft": posX = Math.max(0, posX - step); break;
+        case "ArrowRight": posX = Math.min(670, posX + step); break;
+      }
+      pacman.style.left = posX + "px";
+      pacman.style.top = posY + "px";
+
+      checkEat();
+    }
+
+    // Create dots
+    for (let x = 20; x < 680; x += 40) {
+      for (let y = 20; y < 380; y += 40) {
+        const dot = document.createElement("div");
+        dot.classList.add("dot");
+        dot.style.left = `${x}px`;
+        dot.style.top = `${y}px`;
+        dotsContainer.appendChild(dot);
+      }
+    }
+
+    // Ghost AI
+    let ghostX = 300, ghostY = 200;
+    setInterval(() => {
+      const dx = Math.sign(posX - ghostX) * step / 2;
+      const dy = Math.sign(posY - ghostY) * step / 2;
+      ghostX += dx;
+      ghostY += dy;
+      ghost.style.left = ghostX + "px";
+      ghost.style.top = ghostY + "px";
+
+      if (Math.abs(ghostX - posX) < 20 && Math.abs(ghostY - posY) < 20) {
+        showModal("Game Over!", score);
+      }
+    }, 300);
+
+    function checkEat() {
+      document.querySelectorAll(".dot").forEach(dot => {
+        const dotX = parseInt(dot.style.left);
+        const dotY = parseInt(dot.style.top);
+        if (Math.abs(dotX - posX) < 15 && Math.abs(dotY - posY) < 15) {
+          dot.remove();
+          score += 10;
+          scoreDisplay.innerText = score;
+
+          if (document.querySelectorAll(".dot").length === 0) {
+            showModal("🎉 You Win!", score);
+          }
+        }
+      });
+    }
+
+    function showModal(title, score) {
+      modal.classList.remove("hidden");
+      finalScore.innerText = score;
+      modalTitle.innerText = title;
+    }
+
+    document.addEventListener("keydown", movePacman);
+  </script>
+</body>
+</html>
