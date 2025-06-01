@@ -13,7 +13,7 @@ const Header: React.FC<HeaderProps> = ({ searchQuery, setSearchQuery }) => {
       <div className="container mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center">
           <GameController className="h-8 w-8 text-purple-600 dark:text-purple-400 mr-3" />
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">GameHub</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Funfinity</h1>
         </div>
         
         <div className="relative w-full md:w-1/3">

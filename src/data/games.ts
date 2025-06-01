@@ -23,11 +23,21 @@ export const games: Game[] = [
     id: '3',
     title: 'Neo Pac-Man',
     description: 'A modern Pac-Man with glowing characters, smooth controls, and an immersive score popup for epic gameplay!',
-    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUGJvepxhKyfZhQH66LUKAVlQVnY-bEgYHyQ&s', 
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUGJvepxhKyfZhQH66LUKAVlQVnY-bEgYHyQ&s',
     category: 'Masti',
     tags: ['Arcade', 'Classic', 'Addictive'],
     url: '/src/Games/Pac-Man/index.html' // Update path if needed
+  },
+  {
+    id: '4',
+    title: 'Dot Box Duel',
+    description: 'A strategic 2-player game where players connect dots to form boxes. Earn points by completing squares with smooth animations and colorful turns!',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbBLdXrR5d8fYY96HgIOlQzKddJrMp08IQSg&s',
+    category: 'Masti',
+    tags: ['Strategy', 'Multiplayer', 'Grid'],
+    url: '/src/Games/DotBoxGame/index.html' 
   }
+
 
 ];
 

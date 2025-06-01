@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Dot Box Game</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f9;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2 {
+      margin-top: 20px;
+      color: #333;
+    }
+
+    #game {
+      display: grid;
+      grid-template-columns: repeat(19, 30px);
+      justify-content: center;
+      margin: 30px auto;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      background: #222;
+      border-radius: 50%;
+      margin: auto;
+    }
+
+    .h-line,
+    .v-line {
+      background: transparent;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .h-line {
+      margin-left: -10px;
+      width: 50px;
+      height: 8px;
+    }
+
+    .v-line {
+      margin-left: 10px;
+      width: 8px;
+      height: 35px;
+    }
+
+    .line-A {
+      background-color: red;
+      border-radius: 4px;
+      animation: drawLine 0.3s ease-in-out;
+    }
+
+    .line-B {
+      background-color: blue;
+      border-radius: 4px;
+      animation: drawLine 0.3s ease-in-out;
+    }
+
+    @keyframes drawLine {
+      from {
+        background-color: transparent;
+      }
+
+      to {
+        background-color: inherit;
+      }
+    }
+
+    .square {
+      margin-left: -10px;
+      width: 49px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 16px;
+      background: #fff;
+      transition: background 0.3s;
+    }
+
+    .filled-A {
+      background-color: rgba(255, 0, 0, 0.2);
+      color: red;
+    }
+
+    .filled-B {
+      background-color: rgba(0, 0, 255, 0.2);
+      color: blue;
+    }
+
+    .info {
+      font-size: 18px;
+      color: #444;
+    }
+
+    #scoreboard {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Dot Box Game</h2>
+  <div class="info">Current Turn: <span id="turn">A</span></div>
+  <div class="info" id="scoreboard">Score A: <span id="scoreA">0</span> | Score B: <span id="scoreB">0</span></div>
+  <div id="game"></div>
+
+  <script>
+    const size = 10;
+    const game = document.getElementById('game');
+    let turn = 'A';
+    let score = { A: 0, B: 0 };
+
+    const hLines = Array(size).fill().map(() => Array(size - 1).fill(null));
+    const vLines = Array(size - 1).fill().map(() => Array(size).fill(null));
+    const boxes = Array(size - 1).fill().map(() => Array(size - 1).fill(null));
+
+    function updateScore() {
+      document.getElementById('scoreA').textContent = score.A;
+      document.getElementById('scoreB').textContent = score.B;
+    }
+
+    function switchTurn() {
+      turn = turn === 'A' ? 'B' : 'A';
+      document.getElementById('turn').textContent = turn;
+    }
+
+    function renderGrid() {
+      game.innerHTML = '';
+      for (let i = 0; i < size * 2 - 1; i++) {
+        for (let j = 0; j < size * 2 - 1; j++) {
+          if (i % 2 === 0 && j % 2 === 0) {
+            game.appendChild(createDot());
+          } else if (i % 2 === 0 && j % 2 === 1) {
+            const row = i / 2, col = (j - 1) / 2;
+            game.appendChild(createHLine(row, col));
+          } else if (i % 2 === 1 && j % 2 === 0) {
+            const row = (i - 1) / 2, col = j / 2;
+            game.appendChild(createVLine(row, col));
+          } else {
+            const row = (i - 1) / 2, col = (j - 1) / 2;
+            game.appendChild(createSquare(row, col));
+          }
+        }
+      }
+    }
+
+    function createDot() {
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      return dot;
+    }
+
+    function createHLine(i, j) {
+      const line = document.createElement('div');
+      line.className = 'h-line';
+      if (hLines[i][j]) line.classList.add(`line-${hLines[i][j]}`);
+      line.onclick = () => {
+        if (!hLines[i][j]) {
+          hLines[i][j] = turn;
+          const gained = checkBox(i, j, 'h');
+          renderGrid();
+          if (!gained) switchTurn();
+          updateScore();
+        }
+      };
+      return line;
+    }
+
+    function createVLine(i, j) {
+      const line = document.createElement('div');
+      line.className = 'v-line';
+      if (vLines[i][j]) line.classList.add(`line-${vLines[i][j]}`);
+      line.onclick = () => {
+        if (!vLines[i][j]) {
+          vLines[i][j] = turn;
+          const gained = checkBox(i, j, 'v');
+          renderGrid();
+          if (!gained) switchTurn();
+          updateScore();
+        }
+      };
+      return line;
+    }
+
+    function createSquare(i, j) {
+      const square = document.createElement('div');
+      square.className = 'square';
+      if (boxes[i][j]) {
+        square.textContent = boxes[i][j];
+        square.classList.add(`filled-${boxes[i][j]}`);
+      }
+      return square;
+    }
+
+    function checkBox(i, j, type) {
+      let filled = false;
+
+      const markBox = (r, c) => {
+        if (
+          hLines[r][c] &&
+          hLines[r + 1][c] &&
+          vLines[r][c] &&
+          vLines[r][c + 1] &&
+          !boxes[r][c]
+        ) {
+          boxes[r][c] = turn;
+          score[turn]++;
+          filled = true;
+        }
+      };
+
+      if (type === 'h') {
+        if (i > 0) markBox(i - 1, j);
+        if (i < size - 1) markBox(i, j);
+      } else if (type === 'v') {
+        if (j > 0) markBox(i, j - 1);
+        if (j < size - 1) markBox(i, j);
+      }
+
+      return filled;
+    }
+
+    renderGrid();
+    updateScore();
+  </script>
+</body>
+
+</html>
