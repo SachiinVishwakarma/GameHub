@@ -35,8 +35,18 @@ export const games: Game[] = [
     imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbBLdXrR5d8fYY96HgIOlQzKddJrMp08IQSg&s',
     category: 'Masti',
     tags: ['Strategy', 'Multiplayer', 'Grid'],
-    url: '/Dot-Box/index.html' 
+    url: '/Dot-Box/index.html'
+  },
+  {
+    id: '5',
+    title: 'Rock Paper Scissors',
+    description: 'A classic 2-player or solo game of quick thinking and luck! Choose rock, paper, or scissors and challenge your opponent with fun visuals and smooth gameplay.',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuZjYOceaM7jusSjD1jmBWTvfcUBD0uMlDzQ&s',
+    category: 'Masti',
+    tags: ['Classic', 'Multiplayer', 'Fun'],
+    url: '/Rock-Paper/index.html'
   }
+
 
 
 ];
