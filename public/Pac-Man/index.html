@@ -4,19 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Neo Pac-Man</title>
-
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-
   <style>
     body {
       background: #0a0a0a;
       font-family: 'Courier New', monospace;
     }
 
+    .pacman, .ghost {
+      width: 8vw;
+      height: 8vw;
+      max-width: 40px;
+      max-height: 40px;
+    }
+
     .pacman {
-      width: 30px;
-      height: 30px;
       background: radial-gradient(circle, yellow 60%, gold 100%);
       border-radius: 50%;
       position: absolute;
@@ -24,17 +26,11 @@
     }
 
     @keyframes chomp {
-      0% {
-        clip-path: polygon(100% 50%, 0% 0%, 0% 100%);
-      }
-      100% {
-        clip-path: polygon(100% 50%, 0% 30%, 0% 70%);
-      }
+      0% { clip-path: polygon(100% 50%, 0% 0%, 0% 100%); }
+      100% { clip-path: polygon(100% 50%, 0% 30%, 0% 70%); }
     }
 
     .ghost {
-      width: 30px;
-      height: 30px;
       background: linear-gradient(to top, #f87171, #ef4444);
       border-radius: 50% 50% 0 0;
       position: absolute;
@@ -48,8 +44,10 @@
     }
 
     .dot {
-      width: 6px;
-      height: 6px;
+      width: 2vw;
+      height: 2vw;
+      max-width: 10px;
+      max-height: 10px;
       background: white;
       border-radius: 50%;
       position: absolute;
@@ -58,12 +56,44 @@
     .sidebar {
       background: #1f2937;
     }
+
+    .btn-control {
+      width: 48px;
+      height: 48px;
+      background: #facc15;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
+
+      #game {
+        width: 90vw !important;
+        height: 60vh !important;
+      }
+
+      .pacman, .ghost {
+        width: 6vw;
+        height: 6vw;
+      }
+
+      .dot {
+        width: 1.5vw;
+        height: 1.5vw;
+      }
+    }
   </style>
 </head>
-<body class="flex text-white">
+<body class="flex flex-col md:flex-row text-white min-h-screen">
 
   <!-- Sidebar -->
-  <div class="sidebar w-64 h-screen p-6 flex flex-col justify-between">
+  <div class="sidebar w-64 p-6 flex flex-col justify-between hidden md:flex">
     <div>
       <h2 class="text-3xl font-bold text-yellow-400 mb-8">Neo Pac-Man</h2>
       <ul>
@@ -76,18 +106,28 @@
   </div>
 
   <!-- Game Area -->
-  <div class="flex-1 flex flex-col items-center justify-start p-4">
-    <div class="w-full max-w-[700px] flex justify-between mb-4">
-      <div class="text-xl">Score: <span id="score">0</span></div>
-      <button onclick="location.reload()" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-1 px-4 rounded">
+  <div class="flex-1 flex flex-col items-center justify-start p-4 gap-4">
+    <div class="w-full max-w-[700px] flex justify-between mb-2 px-2">
+      <div class="text-lg md:text-xl">Score: <span id="score">0</span></div>
+      <button onclick="location.reload()" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-1 px-3 rounded">
         🔁 Restart
       </button>
     </div>
 
-    <div id="game" class="relative w-[700px] h-[400px] bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+    <div id="game" class="relative w-[90vw] md:w-[700px] h-[60vh] md:h-[400px] bg-gray-800 rounded-xl overflow-hidden shadow-lg">
       <div id="pacman" class="pacman"></div>
       <div id="ghost" class="ghost"></div>
       <div id="dots"></div>
+    </div>
+
+    <!-- Touch Controls -->
+    <div class="mt-6 md:hidden grid grid-cols-3 gap-4">
+      <div></div>
+      <div class="btn-control" ontouchstart="simulateKey('ArrowUp')">⬆️</div>
+      <div></div>
+      <div class="btn-control" ontouchstart="simulateKey('ArrowLeft')">⬅️</div>
+      <div class="btn-control" ontouchstart="simulateKey('ArrowDown')">⬇️</div>
+      <div class="btn-control" ontouchstart="simulateKey('ArrowRight')">➡️</div>
     </div>
   </div>
 
@@ -115,18 +155,23 @@
     let posX = 10, posY = 10, score = 0;
     const step = 20;
 
-    function movePacman(e) {
-      switch (e.key) {
+    function movePacman(direction) {
+      switch (direction) {
         case "ArrowUp": posY = Math.max(0, posY - step); break;
-        case "ArrowDown": posY = Math.min(370, posY + step); break;
+        case "ArrowDown": posY = Math.min(game.offsetHeight - 40, posY + step); break;
         case "ArrowLeft": posX = Math.max(0, posX - step); break;
-        case "ArrowRight": posX = Math.min(670, posX + step); break;
+        case "ArrowRight": posX = Math.min(game.offsetWidth - 40, posX + step); break;
       }
       pacman.style.left = posX + "px";
       pacman.style.top = posY + "px";
-
       checkEat();
     }
+
+    function simulateKey(direction) {
+      movePacman(direction);
+    }
+
+    document.addEventListener("keydown", e => movePacman(e.key));
 
     // Create dots
     for (let x = 20; x < 680; x += 40) {
@@ -162,7 +207,6 @@
           dot.remove();
           score += 10;
           scoreDisplay.innerText = score;
-
           if (document.querySelectorAll(".dot").length === 0) {
             showModal("🎉 You Win!", score);
           }
@@ -175,8 +219,6 @@
       finalScore.innerText = score;
       modalTitle.innerText = title;
     }
-
-    document.addEventListener("keydown", movePacman);
   </script>
 </body>
 </html>
